@@ -1,9 +1,6 @@
 const initialState = {
   memes: [],
   loading: false,
-  currentPage: 1,
-  perPage: 3,
-  totalCount: 8,
 };
 
 export default function memes(state = initialState, action) {
@@ -63,10 +60,11 @@ export const setCurrentPage = (page) => ({
 export const getMemes = (sort, currentPage) => {
   return async (dispatch) => {
     try {
-      let url = `/memes?page=${currentPage}&limit=3`;
+      let url = `/memes`;
       if (sort) {
-        url = `/memes?sort=${sort}&page=${currentPage}&limit=3`;
+        url = `/memes?sort=${sort}`;
       }
+
       const memes = await fetch(url);
       const json = await memes.json();
 

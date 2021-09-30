@@ -11,14 +11,10 @@ import {
 } from "@material-ui/core";
 import { TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  getMemes,
-  likeMeme,
-  setCurrentPage,
-} from "../../../../redux/features/memes";
-import { createPages } from "../../../../utils/pagesCreator";
+import { likeMeme } from "../../../../redux/features/memes";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+import createSpacing from "@material-ui/core/styles/createSpacing";
 
 const useStyles = makeStyles({
   pages: {
@@ -49,23 +45,25 @@ const useStyles = makeStyles({
     cursor: "pointer",
   },
   like: {
-    position: "relative",
-    right: "22px",
+    display: "flex",
+    marginLeft: "auto !important",
+    color: "red",
+  },
+  countLikes: {
+    color: "#171717",
+    fontSize: 16,
+  },
+  icon: {
+    fontSize: "24px !important",
   },
 });
 
-const Memes = ({ currentPage }) => {
+const Memes = () => {
   const dispatch = useDispatch();
-
   const classes = useStyles();
 
   const userId = useSelector((state) => state.application.id);
   const memes = useSelector((state) => state.memes.memes);
-  const perPage = useSelector((state) => state.memes.perPage);
-  const totalCount = useSelector((state) => state.memes.totalCount);
-  const pagesCount = Math.ceil(totalCount / perPage);
-  const pages = [];
-  createPages(pages, pagesCount, currentPage);
   const [search, setSearch] = useState("");
 
   const handleLike = (idMeme) => {
@@ -117,33 +115,27 @@ const Memes = ({ currentPage }) => {
                   <Button variant="contained" color={"secondary"}>
                     Сохранить
                   </Button>
-                  <Button onClick={() => handleLike(item._id)}>
-                    {item.likes.find((item) => userId === item) ? (
-                      <FavoriteIcon />
-                    ) : (
-                      <FavoriteBorderIcon />
-                    )}
+                  <Button
+                    className={classes.like}
+                    onClick={() => handleLike(item._id)}
+                    startIcon={
+                      item.likes.find((item) => userId === item) ? (
+                        <FavoriteIcon className={classes.icon} />
+                      ) : (
+                        <FavoriteBorderIcon className={classes.icon} />
+                      )
+                    }
+                  >
+                    <span className={classes.countLikes}>
+                      {item.likes.length}
+                    </span>
                   </Button>
-                  <div className={classes.like}>{item.likes.length}</div>
                 </CardActions>
               </Card>
             </Grid>
           );
         })}
       </Grid>
-      <div className={classes.pages}>
-        {pages.map((item, index) => (
-          <span
-            className={
-              currentPage === item ? classes.currentPage : classes.page
-            }
-            key={index}
-            onClick={() => dispatch(setCurrentPage(item))}
-          >
-            {item}
-          </span>
-        ))}
-      </div>
     </Box>
   );
 };
