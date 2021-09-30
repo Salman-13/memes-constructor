@@ -15,6 +15,7 @@ import { likeMeme } from "../../../../redux/features/memes";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import createSpacing from "@material-ui/core/styles/createSpacing";
+import Pending from "../../preloader/Pending";
 
 const useStyles = makeStyles({
   pages: {
@@ -64,12 +65,11 @@ const Memes = () => {
 
   const userId = useSelector((state) => state.application.id);
   const memes = useSelector((state) => state.memes.memes);
+  const loading = useSelector((state) => state.memes.loading);
   const [search, setSearch] = useState("");
-
   const handleLike = (idMeme) => {
     dispatch(likeMeme(idMeme));
   };
-
   const data = memes.filter((item) => {
     if (item.tags.length > 0) {
       for (let i = 0; i < item.tags.length; i++) {
@@ -93,49 +93,53 @@ const Memes = () => {
           value={search}
         />
       </div>
-      <Grid container spacing={3}>
-        {data.map((item) => {
-          return (
-            <Grid item xs={4}>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardMedia
-                  component="img"
-                  alt="green iguana"
-                  image={item.img}
-                />
-                <CardActions>
-                  <Button
-                    component={Link}
-                    to={`/memes/${item._id}`}
-                    variant="contained"
-                    color={"primary"}
-                  >
-                    Подробнее
-                  </Button>
-                  <Button variant="contained" color={"secondary"}>
-                    Сохранить
-                  </Button>
-                  <Button
-                    className={classes.like}
-                    onClick={() => handleLike(item._id)}
-                    startIcon={
-                      item.likes.find((item) => userId === item) ? (
-                        <FavoriteIcon className={classes.icon} />
-                      ) : (
-                        <FavoriteBorderIcon className={classes.icon} />
-                      )
-                    }
-                  >
-                    <span className={classes.countLikes}>
-                      {item.likes.length}
-                    </span>
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
+      {loading ? (
+        <Pending />
+      ) : (
+        <Grid container spacing={3}>
+          {data.map((item) => {
+            return (
+              <Grid item xs={4}>
+                <Card sx={{ maxWidth: 345 }}>
+                  <CardMedia
+                    component="img"
+                    alt="green iguana"
+                    image={item.img}
+                  />
+                  <CardActions>
+                    <Button
+                      component={Link}
+                      to={`/memes/${item._id}`}
+                      variant="contained"
+                      color={"primary"}
+                    >
+                      Подробнее
+                    </Button>
+                    <Button variant="contained" color={"secondary"}>
+                      Сохранить
+                    </Button>
+                    <Button
+                      className={classes.like}
+                      onClick={() => handleLike(item._id)}
+                      startIcon={
+                        item.likes.find((item) => userId === item) ? (
+                          <FavoriteIcon className={classes.icon} />
+                        ) : (
+                          <FavoriteBorderIcon className={classes.icon} />
+                        )
+                      }
+                    >
+                      <span className={classes.countLikes}>
+                        {item.likes.length}
+                      </span>
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
     </Box>
   );
 };
